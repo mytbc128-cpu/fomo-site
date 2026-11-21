@@ -1,0 +1,29 @@
+{
+  "entries": [
+    {
+      "datetime": "2026-11-20T01:41:12-05:00",
+      "summary": "Published the FOMO sign-up page (join.html).",
+      "commit": "07f4c54"
+    },
+    {
+      "datetime": "2026-11-20T01:24:50-05:00",
+      "summary": "Removed 124 non-FOMO files from the download library.",
+      "commit": "942c290"
+    },
+    {
+      "datetime": "2026-11-20T00:47:31-05:00",
+      "summary": "Moved downloads to the post-purchase thank-you page and removed the public Resources page. Thank-you page went live.",
+      "commit": "499141c"
+    },
+    {
+      "datetime": "2026-11-20T00:44:58-05:00",
+      "summary": "Replaced Coming soon with a Buy now button and a larger price on the FOMO home page.",
+      "commit": "a315ad0"
+    },
+    {
+      "datetime": "2026-11-20T00:33:59-05:00",
+      "summary": "FOMO site first published: home, privacy, terms, and resources pages.",
+      "commit": "f7514fe"
+    }
+  ]
+}

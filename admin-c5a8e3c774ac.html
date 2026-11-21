@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="googlebot" content="noindex,nofollow">
+  <title>FOMO Admin</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-main { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 36px 0 72px; }
+    .admin-kicker { color: var(--accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .admin-main h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 8px; }
+    .admin-lede { color: var(--dim); margin: 0 0 28px; }
+    .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 0 0 20px; }
+    .panel h2 { margin: 0 0 6px; font-size: 1.15rem; }
+    .panel-note { color: var(--dim); font-size: 0.9rem; margin: 0 0 16px; }
+    .status-list, .log-list, .commit-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .status-list li, .log-item, .commit-item {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .status-list li { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .page-name { font-weight: 650; }
+    .page-meta { color: var(--dim); font-size: 0.85rem; }
+    .badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .when { color: var(--dim); font-size: 0.82rem; margin: 0 0 4px; }
+    .commit-msg, .log-summary { margin: 0; color: var(--text); }
+    .commit-actions { margin-top: 6px; font-size: 0.88rem; display: flex; gap: 12px; flex-wrap: wrap; }
+    .placeholder { color: var(--muted); margin: 0; line-height: 1.6; }
+    .gate {
+      max-width: 420px;
+      margin: 72px auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .gate h1 { font-size: 1.6rem; margin: 0 0 8px; }
+    .gate p { color: var(--dim); margin: 0 0 18px; }
+    .gate form { display: grid; gap: 12px; }
+    .gate input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .gate button { margin-top: 0; }
+    .gate-error { color: #f0a0a0; font-size: 0.9rem; margin: 0; min-height: 1.2em; }
+    .hidden { display: none; }
+    .curtain-note { color: var(--dim); font-size: 0.82rem; margin: 24px 0 0; }
+    .sha { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; color: var(--dim); }
+  </style>
+</head>
+<body>
+  <div id="gate" class="gate">
+    <p class="admin-kicker">FOMO</p>
+    <h1>Admin</h1>
+    <p>Enter the passcode to open the activity board.</p>
+    <form id="gate-form" autocomplete="off">
+      <label class="visually-hidden" for="passcode" style="position:absolute;left:-9999px">Passcode</label>
+      <input id="passcode" type="password" name="passcode" required autofocus>
+      <button class="btn btn-buy" type="submit">Open board</button>
+      <p id="gate-error" class="gate-error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="board" class="hidden">
+    <header class="site-header">
+      <div class="header-inner">
+        <span class="brand">
+          <span class="brand-mark">FOMO</span>
+          <span class="brand-sub">Admin activity board</span>
+        </span>
+      </div>
+    </header>
+    <main class="admin-main">
+      <p class="admin-kicker">Internal</p>
+      <h1>Site activity</h1>
+      <p class="admin-lede">A record of what is live and what has changed on the FOMO GitHub site. This page is unlisted and is not linked from the public pages.</p>
+
+      <section class="panel" aria-labelledby="changes-heading">
+        <h2 id="changes-heading">Site changes</h2>
+        <p class="panel-note">Pulled live from the public GitHub commit history. Covers publishes and content changes automatically.</p>
+        <ul id="commits" class="commit-list"><li class="placeholder">Loading recent changes…</li></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="pages-heading">
+        <h2 id="pages-heading">Pages status</h2>
+        <p class="panel-note">Current pages on the live GitHub site.</p>
+        <ul class="status-list">
+          <li>
+            <div>
+              <div class="page-name"><a href="index.html">FOMO home</a></div>
+              <div class="page-meta">index.html · $99.99 course page</div>
+            </div>
+            <span class="badge">Live</span>
+          </li>
+          <li>
+            <div>
+              <div class="page-name"><a href="join.html">Sign-up page</a></div>
+              <div class="page-meta">join.html</div>
+            </div>
+            <span class="badge">Live</span>
+          </li>
+          <li>
+            <div>
+              <div class="page-name"><a href="thank-you-0f6d40a1cbf6.html">Thank-you page</a></div>
+              <div class="page-meta">thank-you-0f6d40a1cbf6.html · unlisted buyers page</div>
+            </div>
+            <span class="badge">Live</span>
+          </li>
+          <li>
+            <div>
+              <div class="page-name"><a href="privacy.html">Privacy Policy</a></div>
+              <div class="page-meta">privacy.html</div>
+            </div>
+            <span class="badge">Live</span>
+          </li>
+          <li>
+            <div>
+              <div class="page-name"><a href="terms.html">Terms of Service</a></div>
+              <div class="page-meta">terms.html</div>
+            </div>
+            <span class="badge">Live</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="activity-heading">
+        <h2 id="activity-heading">Activity log</h2>
+        <p class="panel-note">Manual record of key site work, with dates from git history.</p>
+        <ul id="activity" class="log-list"><li class="placeholder">Loading activity log…</li></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="signups-heading">
+        <h2 id="signups-heading">Form sign-ups</h2>
+        <p class="placeholder">Not connected yet — sign-up form currently opens an email; no sign-ups are saved to a list. Connect a form service such as Brevo or HubSpot to log submissions here.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="payments-heading">
+        <h2 id="payments-heading">Payments</h2>
+        <p class="placeholder">Not connected yet — no Stripe payment link yet. A Stripe payment link and webhook would be needed before payment activity can be recorded here.</p>
+      </section>
+
+      <p class="curtain-note">The passcode on this page is only a curtain, not real security. The site repository is public, so anyone who finds this URL can also read the files.</p>
+    </main>
+  </div>
+
+  <script>
+    const PASS_HASH = "fda38cfd7e2cb8ad9b5cede2e485140930010430c735801025901e5ea3d64778";
+    const SESSION_KEY = "fomo-admin-ok";
+    const COMMITS_URL = "https://api.github.com/repos/mytbc128-cpu/fomo-site/commits?per_page=50";
+    const LOG_URL = "admin-log-eea41b2ba471.json";
+    const COMMIT_BASE = "https://github.com/mytbc128-cpu/fomo-site/commit/";
+    const TZ = "America/New_York";
+
+    const gate = document.getElementById("gate");
+    const board = document.getElementById("board");
+    const form = document.getElementById("gate-form");
+    const errorEl = document.getElementById("gate-error");
+
+    function formatET(iso) {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ,
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZoneName: "short"
+      }).format(d) + " (ET)";
+    }
+
+    async function sha256hex(text) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function checkPass(value) {
+      const hash = await sha256hex(value.trim().toUpperCase());
+      return hash === PASS_HASH;
+    }
+
+    function showBoard() {
+      gate.classList.add("hidden");
+      board.classList.remove("hidden");
+      loadCommits();
+      loadActivity();
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorEl.textContent = "";
+      const ok = await checkPass(document.getElementById("passcode").value);
+      if (!ok) {
+        errorEl.textContent = "That passcode did not match.";
+        return;
+      }
+      sessionStorage.setItem(SESSION_KEY, "1");
+      showBoard();
+    });
+
+    if (sessionStorage.getItem(SESSION_KEY) === "1") showBoard();
+
+    async function loadCommits() {
+      const list = document.getElementById("commits");
+      try {
+        const res = await fetch(COMMITS_URL);
+        if (!res.ok) throw new Error("GitHub returned " + res.status);
+        const commits = await res.json();
+        if (!Array.isArray(commits) || commits.length === 0) {
+          list.innerHTML = "<li class=\"placeholder\">No commits were returned.</li>";
+          return;
+        }
+        list.innerHTML = commits.map((item) => {
+          const sha = item.sha || "";
+          const shortSha = sha.slice(0, 7);
+          const message = (item.commit && item.commit.message ? item.commit.message : "Untitled change").split("\n")[0];
+          const date = item.commit && item.commit.author && item.commit.author.date
+            ? formatET(item.commit.author.date)
+            : "";
+          const url = item.html_url || (COMMIT_BASE + sha);
+          const safeMsg = escapeHtml(message);
+          return `<li class="commit-item">
+            <p class="when">${escapeHtml(date)} · <span class="sha">${escapeHtml(shortSha)}</span></p>
+            <p class="commit-msg">${safeMsg}</p>
+            <div class="commit-actions"><a href="${url}" target="_blank" rel="noopener noreferrer">Files changed</a></div>
+          </li>`;
+        }).join("");
+      } catch (err) {
+        list.innerHTML = "<li class=\"placeholder\">Could not load site changes from GitHub right now. Try again in a few minutes.</li>";
+      }
+    }
+
+    async function loadActivity() {
+      const list = document.getElementById("activity");
+      try {
+        const res = await fetch(LOG_URL + "?v=" + Date.now());
+        if (!res.ok) throw new Error("Log returned " + res.status);
+        const data = await res.json();
+        const entries = data.entries || [];
+        if (!entries.length) {
+          list.innerHTML = "<li class=\"placeholder\">No activity has been logged yet.</li>";
+          return;
+        }
+        list.innerHTML = entries.map((entry) => {
+          const when = entry.datetime ? formatET(entry.datetime) : "";
+          const commit = entry.commit ? String(entry.commit) : "";
+          const link = commit
+            ? ` · <a href="${COMMIT_BASE}${escapeHtml(commit)}" target="_blank" rel="noopener noreferrer"><span class="sha">${escapeHtml(commit)}</span></a>`
+            : "";
+          return `<li class="log-item">
+            <p class="when">${escapeHtml(when)}${link}</p>
+            <p class="log-summary">${escapeHtml(entry.summary || "")}</p>
+          </li>`;
+        }).join("");
+      } catch (err) {
+        list.innerHTML = "<li class=\"placeholder\">Could not load the activity log.</li>";
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>
